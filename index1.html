@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.net/gh/eliyantosarage/font-awesome-pro@main/fontawesome-pro-6.5.1-web/css/all.min.css"> -->
+    <title>Vue.js Pet Depot</title>
+</head>
+
+<body>
+    <div id="app">
+        <header>
+            <h1 v-text="sitename"></h1>
+            <button v-on:click="showCheckout">
+                <span class="fas fa-cart-plus"></span>
+                CheckOut:
+                {{cartItemCount}}
+            </button>
+        </header>
+        <main>
+            <div v-if="showProduct">     <!-- IF STATEMENT -->
+            <figure>
+                <img style="height: 200px; width: 200px;" v-bind:src="product.image" alt="CAT">
+            </figure>
+            <h2 v-text="product.title"></h2>
+            <p v-html="product.description"></p> <!-- to render <em></em> in the <script> -->
+            <h4>Price: {{product.price}}</h4>
+            <p>Available Stock: {{product.availableInventory}}</p> <!--  - cartItemCount -->
+            <br>
+            <!-- <button type="submit" v-on:click="addToCart" v-show="canAddToCart">Add to Cart +</button>     button disappears     -->
+            <br>
+            <button type="submit" v-on:click="addToCart" v-if="canAddToCart">Add to Cart +</button> <!-- button fades out 1/2 -->
+            <button disabled="disabled" type="submit" v-else>Cannot Add to Cart</button>                 <!-- button fades out 2/2 -->
+            </div>
+            <div v-else>     <!-- ELSE STATEMENT -->
+
+                <h2>CheckOut</h2>
+                <p>
+                    <label for="firstname">First Name:</label>
+                    <input id="firstname" v-model.trim="order.firstName">
+                </p>
+                <p>
+                    <label for="lastname">Last Name:</label>
+                    <input id="lastname" v-model.trim="order.lastName"/>
+                </p>
+                <p>
+                    <label for="address">Address:</label>
+                    <input id="address" v-model="order.address"/>
+                </p>
+                <p>
+                    <label for="city">City:</label>
+                    <input id="city" v-model="order.city"/>
+                </p>
+                <!--
+                <p>
+                    <label for="state">State:</label>
+                    <select id="state" v-model="order.state">
+                        <option disabled value="">State</option>
+                        <option>Option 1</option>
+                        <option>Option 2</option>
+                        <option>Option 3</option>
+                        <option>Option 4</option>
+                    </select>
+                </p>
+                -->
+                <!--
+                <p>
+                    <label for="state">State:</label>
+                    <select id="state" v-model="order.state" class="form-control">
+                        <option disabled value="">State</option>
+                        <option v-bind:value="states.o1">Option 1</option>
+                        <option v-bind:value="states.o2">Option 2</option>
+                        <option v-bind:value="states.o3">Option 3</option>
+                        <option v-bind:value="states.o4">Option 4</option>
+                    </select>
+                </p>
+                -->
+                <p>
+                    <label for="state">State:</label>
+                    <select id="state" v-model="order.state">
+                        <option disabled value="">State</option>
+                        <option v-for=" (stateX, keyX) in states" v-bind:value="stateX"> {{ keyX }} </option>
+                    </select>
+                </p>
+                <p>
+                    <label for="zip">Zip:</label>
+                    <input id="zip" type="number" v-model.number="order.zip">
+                </p>
+                <!--
+                <p>
+                    <label for="shipasgift">Ship as Gift ?</label>
+                    <input id="shipasgift" type="checkbox" value="" v-model="order.gift">
+                </p>
+                -->
+                <p>
+                    <label for="shipasgift">Ship as Gift:</label>
+                    <input
+                    id="shipasgift"
+                    type="checkbox"
+                    value=""
+                    v-model="order.gift"
+                    v-bind:true-value="order.sendGift"
+                    v-bind:false-value="order.dontSendGift"
+                    >
+                </p>
+                <p>
+                    <label for="home">Home</label>
+                    <input id="home" type="radio" value="Home" v-model="order.shipping">
+                    <label for="business">Business</label>
+                    <input id="business" type="radio" value="Business" v-model="order.shipping">
+                    
+                </p>
+                <br>
+
+                <h2>Order Information</h2>
+                <p>First Name: {{ order.firstName }}</p>
+                <p>Last Name: {{ order.lastName }}</p>
+                <p>Address: {{ order.address }}</p>
+                <p>City: {{ order.city }}</p>
+                <p>State: {{ order.state }}</p>
+                <p>Zip: {{ order.zip }}</p>
+                <p>Ship as Gift: {{ order.gift }}</p>
+                <p>Home or Business: {{ order.shipping }}</p>
+                <br>
+
+                <button type="submit" v-on:click="submitForm">Place Order</button>
+            </div>
+        </main>
+    </div>
+
+    <script type="text/javascript">
+        let webstore = new Vue ({
+            el: "#app",     ///////     // The 'option object': DOM mounting point  -  el=element
+            data: {         ///////
+                sitename: "Vue.js Pet Depot",
+                product: {
+                    //showProduct: true,
+                    id: 1001,
+                    title: "Cat Food, 25lb bag",
+                    description: "A 25 pound bag of <em>irresistable</em>, " + "organic goodness for your cat.",
+                    price: 2000,
+                    image: "cat.png",
+                    availableInventory: 5,
+                },
+                order: {
+                    firstName: "",
+                    lastName: "",
+                    address: "",
+                    city: "",
+                    state: "",
+                    zip: "",
+                    gift: "Don't Send as a Gift",
+                    sendGift: "Send as a Gift",
+                    dontSendGift: "Don't Send as a Gift",
+                    shipping: "Home",
+                },
+                states: {               // {} brackets when using key  // [] brackets when not using key
+                    O1: "Option 1",
+                    O2: "Option 2",
+                    O3: "Option 3",
+                    O4: "Option 4",
+                },
+                cart: [],
+                showProduct: true,
+            },
+            methods: {      ///////
+                addToCart: function() {
+                    this.cart.push(this.product.id);
+                    // this.product.availableInventory -= 1;
+                    console.log(this.cart);
+                },
+                showCheckout: function() {
+                    this.showProduct = this.showProduct ? false : true;
+                    console.log(this.showProduct);
+                },
+                submitForm: function() {
+                    alert("Order Submitted");
+                }
+            },
+            computed: {     ///////
+                cartItemCount: function() {
+                    return this.cart.length;
+                },
+                canAddToCart: function() {
+                    return this.product.availableInventory > this.cartItemCount;
+
+                },
+            },
+        });
+    </script>
+
+</body>
+
+</html>
